@@ -1,9 +1,12 @@
 const http = require('http');
+const path = require('path');
 const cors = require('cors');
 const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
 
 const config = require('./configs/config');
 const apiRoute = require('./modules/api.route');
+const supportRoute = require('./modules/support/support.route');
 const ConnectToMongoDB = require('./configs/mongo.config');
 
 
@@ -20,6 +23,7 @@ class CreateApplication {
     this.#configureApp();
     this.#setupServer();
     this.#connectToDB();
+    this.#configViewEngin();
     this.#setupRoutes();
   }
 
@@ -27,7 +31,7 @@ class CreateApplication {
     this.#app.use(cors());
     this.#app.use(express.json());
     this.#app.use(express.urlencoded({ extended: true }));
-    this.#app.use('/uploads', express.static('public'));
+    this.#app.use(express.static('public'));
   }
 
   #setupServer() {
@@ -50,8 +54,19 @@ class CreateApplication {
      ConnectToMongoDB.connect();
   }
 
+  #configViewEngin() {
+    this.#app.use(expressLayouts);
+    this.#app.set('view engine', 'ejs');
+    this.#app.set('views', 'resource/views');
+    console.log(path.join(__dirname, 'resource/views'));
+    this.#app.set('layout extractStyles', true);
+    this.#app.set('layout extractScripts', true);
+    this.#app.set('layout', './layouts/main');
+  }
+
   #setupRoutes() {
     this.#app.use('/api', apiRoute)
+    this.#app.use('/support', supportRoute)
   }
 }
 
