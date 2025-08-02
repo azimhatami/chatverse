@@ -8,6 +8,7 @@ const config = require('./configs/config');
 const apiRoute = require('./modules/api.route');
 const supportRoute = require('./modules/support/support.route');
 const ConnectToMongoDB = require('./configs/mongo.config');
+const setupSwagger = require('./configs/swagger.config');
 
 
 class CreateApplication {
@@ -24,7 +25,12 @@ class CreateApplication {
     this.#setupServer();
     this.#connectToDB();
     this.#configViewEngin();
+    this.#configureSwagger();
     this.#setupRoutes();
+  }
+
+  #connectToDB() {
+     ConnectToMongoDB.connect();
   }
 
   #configureApp() {
@@ -50,8 +56,8 @@ class CreateApplication {
     })
   }
 
-  #connectToDB() {
-     ConnectToMongoDB.connect();
+  #configureSwagger() {
+    setupSwagger(this.#app);
   }
 
   #configViewEngin() {
