@@ -7,8 +7,8 @@ const { Router } = require('express');
 
 const supportRoute = Router();
 
-supportRoute.get('/namespace', namespaceRoute);
-supportRoute.get('/room', roomRoute);
+supportRoute.use('/namespace', namespaceRoute);
+supportRoute.use('/room', roomRoute);
 supportRoute.get('/', SupportController.renderChatRoom);
 
 module.exports = supportRoute;

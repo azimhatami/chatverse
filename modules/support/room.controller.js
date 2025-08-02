@@ -2,12 +2,17 @@ const Conversation = require('./support.model');
 const { StatusCodes } = require('http-status-codes');
 
 class RoomController {
-  async addRoom(req, res, next) {
+  addRoom = async (req, res, next) => {
     try {
-      const { title, endpoint } = req.body;
-      const conversation = await Conversation.create({ title, endpoint });
+      const { name, description, image, namespace  } = req.body;
+      await this.findNamespaceWithEndpoint(namespace);
+      await this.findRoomWithName(name);
+      const room = { name, description, image }
+      await Conversation.updateOne({endpoint: namespace}, {
+        $push: {rooms: room}
+      });
       res.status(StatusCodes.CREATED).json({
-        message: 'Namespace created successful'
+        message: 'Room created successful'
       });
     } catch (error) {
       res.status(500).json({
@@ -17,12 +22,13 @@ class RoomController {
     }
   }
 
-  async getRooms(req, res, next) {
+  getRooms = async (req, res, next) => {
     try {
-      const namespaces = await Conversation.find({ }, {rooms: 0});
-      res.status(StatusCode.OK).json({
+      const conversation = await Conversation.find({ }, {rooms: 1, _id: 0});
+      const allRooms = conversation.flatMap(conv => conv.rooms);
+      res.status(StatusCodes.OK).json({
         message: 'Get all namespaces',
-        namespaces
+        data: allRooms
       });
     } catch (error) {
       res.status(500).json({
@@ -30,6 +36,17 @@ class RoomController {
         error: error.message
       });
     }
+  }
+
+  findRoomWithName = async (name) => {
+    const room = await Conversation.findOne({ 'rooms.name': name });
+    if (room) throw new Error('A room with this name already exists')
+  }
+
+  findNamespaceWithEndpoint = async (endpoint) => {
+    const namespace = await Conversation.findOne({endpoint});
+    if (!namespace) throw new Error('Namespace not found')
+    return namespace;
   }
 }
 

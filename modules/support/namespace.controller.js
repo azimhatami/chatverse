@@ -2,34 +2,45 @@ const Conversation = require('./support.model');
 const { StatusCodes } = require('http-status-codes');
 
 class NamespaceController {
-  async addNamespace(req, res, next) {
+  addNamespace = async (req, res, next) => {
     try {
       const { title, endpoint } = req.body;
+      await this.findNamespaceWithEndpoint(endpoint);
       const conversation = await Conversation.create({ title, endpoint });
-      res.status(StatusCodes.CREATED).json({
-        message: 'Namespace created successful'
+
+      return res.status(StatusCodes.CREATED).json({
+        statusCode: StatusCodes.CREATED,
+        message: 'Namespace created successfully'
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: 'Internal server error',
-        error: error.message
+        eorror: error.message
       });
     }
   }
 
-  async getNamespaces(req, res, next) {
+  getNamespaces = async (req, res, next) => {
     try {
-      const namespaces = await Conversation.find({ }, {rooms: 0});
-      res.status(StatusCode.OK).json({
-        message: 'Get all namespaces',
-        namespaces
+      const namespaces = await Conversation.find({}, { rooms: 0 });
+
+      return res.status(StatusCodes.OK).json({
+        statusCode: StatusCodes.OK,
+        data: {
+            namespaces
+        }
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: 'Internal server error',
-        error: error.message
+        eorror: error.message
       });
     }
+  }
+
+  findNamespaceWithEndpoint = async (endpoint) => {
+    const conversation = await Conversation.findOne({ endpoint });
+    if (conversation) throw new Error('This endpoint is already taken');
   }
 }
 

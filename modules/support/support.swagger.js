@@ -36,12 +36,10 @@
  *          type: string
  *          description: the description of room
  *        image:
- *          type: array
+ *          type: string
  *          description: the image of room
  *        namespace:
  *          type: string
- *          items:
- *            type: string
  *          description: namespace of conversation
  */
 
@@ -54,7 +52,7 @@
  *    requestBody:
  *      required: true
  *      content: 
- *        application/x-www-form-urlencoded:
+ *        multipart/form-data:
  *          schema:
  *            $ref: '#/components/schemas/namespace'
  *    responses: 
@@ -71,7 +69,7 @@
  *    requestBody:
  *      required: true
  *      content: 
- *        multipart/form-data:
+ *        application/x-www-form-urlencoded:
  *          schema:
  *            $ref: '#/components/schemas/room'
  *    responses: 
