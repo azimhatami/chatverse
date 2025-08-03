@@ -4,9 +4,11 @@ const { StatusCodes } = require('http-status-codes');
 class RoomController {
   addRoom = async (req, res, next) => {
     try {
-      const { name, description, image, namespace  } = req.body;
+      const { name, description, namespace } = req.body;
       await this.findNamespaceWithEndpoint(namespace);
       await this.findRoomWithName(name);
+      const image = `/assets/images/${req.file.filename}`;
+      console.log('IMG', image);
       const room = { name, description, image }
       await Conversation.updateOne({endpoint: namespace}, {
         $push: {rooms: room}
@@ -45,7 +47,7 @@ class RoomController {
 
   findNamespaceWithEndpoint = async (endpoint) => {
     const namespace = await Conversation.findOne({endpoint});
-    if (!namespace) throw new Error('Namespace not found')
+    if (!namespace) throw new Error('Namespace not found');
     return namespace;
   }
 }

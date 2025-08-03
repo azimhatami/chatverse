@@ -36,7 +36,7 @@
  *          type: string
  *          description: the description of room
  *        image:
- *          type: string
+ *          type: file
  *          description: the image of room
  *        namespace:
  *          type: string
@@ -69,7 +69,7 @@
  *    requestBody:
  *      required: true
  *      content: 
- *        application/x-www-form-urlencoded:
+ *        multipart/form-data:
  *          schema:
  *            $ref: '#/components/schemas/room'
  *    responses: 
