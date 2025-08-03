@@ -9,6 +9,8 @@ const apiRoute = require('./modules/api.route');
 const supportRoute = require('./modules/support/support.route');
 const ConnectToMongoDB = require('./configs/mongo.config');
 const setupSwagger = require('./configs/swagger.config');
+const initialSocket = require('./socket/server');
+const { socketHandler } = require('./socket/main');
 
 
 class CreateApplication {
@@ -42,6 +44,10 @@ class CreateApplication {
 
   #setupServer() {
     const server = http.createServer(this.#app);
+
+    const io = initialSocket(server);
+
+    socketHandler(io);
 
     server.listen(this.#PORT, () => {
       const runningMode = `Server running in ${this.#MODE} mode`;
