@@ -52,7 +52,7 @@
  *    requestBody:
  *      required: true
  *      content: 
- *        multipart/form-data:
+ *        application/x-www-form-urlencoded	:
  *          schema:
  *            $ref: '#/components/schemas/namespace'
  *    responses: 
