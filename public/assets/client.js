@@ -47,6 +47,10 @@ function getRoomInfo(roomName) {
     console.log(roomInfo);
     document.querySelector('#roomName h3').innerText = roomInfo.description;
   })
+
+  namespaceSocket.on('onlineUsers', users => {
+    document.getElementById('count').innerText = users;
+  })
 }
 
 socket.on('connect', () => {
