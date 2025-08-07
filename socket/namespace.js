@@ -1,4 +1,5 @@
 const Conversation = require('../modules/support/support.model');
+const moment = require('moment-jalaali');
 
 class NamespaceHandler{
   #io;
@@ -30,6 +31,7 @@ class NamespaceHandler{
           await this.getOnlineUsers(namespace.endpoint, roomName)
           const roomInfo = conversation.rooms.find(item => item.name == roomName)
           socket.emit('roomInfo', roomInfo)
+          this.getNewMessage(socket)
           socket.on('disconnect', async () => {
             await this.getOnlineUsers(namespace.endpoint, roomName)
           })
@@ -41,6 +43,23 @@ class NamespaceHandler{
   async getOnlineUsers(endpoint, roomName) {
     const onlineUsers = await this.#io.of(`/${endpoint}`).in(roomName).allSockets();
     this.#io.of(`/${endpoint}`).in(roomName).emit('onlineUsers', Array.from(onlineUsers).length)
+  }
+
+  getNewMessage(socket) {
+    socket.on('newMessage', async (data) => {
+      const {message, roomName, endpoint} = data;
+
+      await Conversation.updateOne({endpoint, 'rooms.name': roomName}, {
+        $push: {
+          'rooms.$.messages': {
+            sender: '688fa5952320794eaaff6145',
+            message,
+            dateTime: Date.now()
+
+          }
+        }
+      })
+    })
   }
 }
 

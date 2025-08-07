@@ -13,7 +13,7 @@ function initNamespaceConnection(endpoint) {
   namespaceSocket.on('connect', () => {
     namespaceSocket.on('roomList', rooms => {
       // console.log(rooms);
-      getRoomInfo(rooms[0]?.name)
+      getRoomInfo(rooms[0]?.name, endpoint)
       const roomsElement = document.querySelector('#contacts ul')
       roomsElement.innerHTML = '';
       for (const room of rooms) {
@@ -35,15 +35,17 @@ function initNamespaceConnection(endpoint) {
       for (const room of roomNodes) {
         room.addEventListener('click', () => {
           const roomName = room.getAttribute('roomName');
-          getRoomInfo(roomName)
+          getRoomInfo(roomName, endpoint)
         })
       }
     })
   })
 }
 
-function getRoomInfo(roomName) {
+function getRoomInfo(roomName, endpoint) {
   namespaceSocket.emit('joinRoom', roomName)
+    document.querySelector('#roomName h3').setAttribute('roomName', roomName)
+    document.querySelector('#roomName h3').setAttribute('endpoint', endpoint)
   namespaceSocket.once('roomInfo', roomInfo => {
     console.log(roomInfo);
     document.querySelector('#roomName h3').innerText = roomInfo.description;
@@ -52,6 +54,38 @@ function getRoomInfo(roomName) {
   namespaceSocket.on('onlineUsers', users => {
     document.getElementById('count').innerText = users;
   })
+}
+
+function sendMessage() {
+  const roomName = document.querySelector('#roomName h3').getAttribute('roomName')
+  const endpoint = document.querySelector('#roomName h3').getAttribute('endpoint')
+  let message = document.querySelector('.message-input input#messageInput').value;
+
+  if (message.trim() == '') {
+    return alert('input message can not be empty');
+  }
+  namespaceSocket.emit('newMessage', {
+    message,
+    roomName,
+    endpoint
+  });
+  namespaceSocket.on('confirmMessage', data => {
+    console.log(data);
+  })
+
+  const li = stringToHTML(`
+    <li class="sent">
+        <img src="http://emilcarlsson.se/assets/harveyspecter.png"
+            alt="" />
+        <p>${message}</p>
+    </li>
+  `)
+
+  document.querySelector('.messages ul').appendChild(li);
+  document.querySelector('.message-input input#messageInput').value = '';
+
+  const messagesElement = document.querySelector('div.messages');
+  messagesElement.scrollTo(0, messagesElement.scrollHeight);
 }
 
 socket.on('connect', () => {
@@ -79,4 +113,14 @@ socket.on('connect', () => {
       });
     }
   })
+  window.addEventListener('keydown', (e) => {
+    if (e.code == 'Enter'){
+      sendMessage();
+    }
+  })
+
+  document.querySelector('button.submit').addEventListener('click', () => {
+    sendMessage()
+  })
 })
+

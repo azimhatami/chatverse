@@ -3,7 +3,7 @@ const { Schema, model, Types } = require('mongoose');
 const messageSchema = new Schema({
   sender: { type: Types.ObjectId, ref: 'user' },
   message: { type: String },
-  dateTime: { type: Date, default: Date.now }
+  dateTime: { type: Number }
 });
 
 const roomSchema = new Schema({
