@@ -1,7 +1,7 @@
 const { Schema, model, Types } = require('mongoose');
 
 const messageSchema = new Schema({
-  sender: { type: Types.ObjectId, ref: 'user' },
+  sender: { type: Types.ObjectId, ref: 'User' },
   message: { type: String },
   dateTime: { type: Number }
 });

@@ -9,6 +9,8 @@ const supportRoute = Router();
 
 supportRoute.use('/namespace', namespaceRoute);
 supportRoute.use('/room', roomRoute);
+supportRoute.get('/login', SupportController.loginForm);
+supportRoute.post('/login', SupportController.login);
 supportRoute.get('/', SupportController.renderChatRoom);
 
 module.exports = supportRoute;
