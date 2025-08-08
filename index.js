@@ -3,6 +3,8 @@ const path = require('path');
 const cors = require('cors');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const config = require('./configs/config');
 const apiRoute = require('./modules/api.route');
@@ -10,6 +12,7 @@ const supportRoute = require('./modules/support/support.route');
 const ConnectToMongoDB = require('./configs/mongo.config');
 const setupSwagger = require('./configs/swagger.config');
 const initialSocket = require('./socket/server');
+const clientHelper = require('./utils/client');
 const { socketHandler } = require('./socket/main');
 
 
@@ -24,6 +27,7 @@ class CreateApplication {
     this.#MODE = MODE; 
 
     this.#configureApp();
+    this.initClientSession();
     this.#setupServer();
     this.#connectToDB();
     this.#configViewEngin();
@@ -74,6 +78,23 @@ class CreateApplication {
     this.#app.set('layout extractStyles', true);
     this.#app.set('layout extractScripts', true);
     this.#app.set('layout', './layouts/main');
+    this.#app.use((req, res, next) => {
+      this.#app.locals = clientHelper(req, res);
+      next();
+    })
+  }
+
+  initClientSession() {
+    this.#app.use(cookieParser(config.COOKIE_PARSER_SECRET_KEY))
+    console.log('keyy', config.COOKIE_PARSER_SECRET_KEY);
+    this.#app.use(session({
+      secret: config.COOKIE_PARSER_SECRET_KEY,
+      resave: true,
+      saveUninitialized: true,
+      cookie: {
+        secure: true,
+      }
+    }))
   }
 
   #setupRoutes() {

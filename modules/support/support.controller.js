@@ -22,10 +22,22 @@ class SupportController {
         error: 'Username incorrect'
       })
       const token = await signAccessToken(user._id);
-      return res.json({ token: token })
+      user.token = token;
+      user.save();
+      res.cookie(
+        'access_token', 
+        token, 
+        {
+          signed: true, 
+          httpOnly: true, 
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 1)
+        }
+      );
+      return res.redirect('/support')
     } catch (error) {
       res.status(500).json({
         message: 'Internal server error',
+        error: error.message
       });
     }
   }
