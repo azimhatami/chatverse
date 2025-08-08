@@ -47,12 +47,12 @@ class NamespaceHandler{
 
   getNewMessage(socket) {
     socket.on('newMessage', async (data) => {
-      const {message, roomName, endpoint} = data;
-
+      const {message, roomName, endpoint, sender} = data;
+      console.log(data);
       await Conversation.updateOne({endpoint, 'rooms.name': roomName}, {
         $push: {
           'rooms.$.messages': {
-            sender: '688fa5952320794eaaff6145',
+            sender,
             message,
             dateTime: Date.now()
 

@@ -2,8 +2,14 @@
     <div class="contact-profile">
         <img src="http://emilcarlsson.se/assets/harveyspecter.png"
             alt="" />
-		<p>this is a test</p>
-        <input type="hidden" id="userID" value="">
+		<%if (req.user.fullName) {%>
+			<p><%=req.user.fullName%></p>
+		<%} else if (req.userName) {%>
+			<p><%=req.user.userName%></p>
+		<%} else {%>
+			<p><%=req.user.mobile%></p>
+		<%}%>
+        <input type="hidden" id="userID" value="<%=req.user._id%>">
         <div class="social-media">
             <span id="onlinesCount"><strong>افراد آنلاین : </strong><span id="count"></span></span>
         </div>

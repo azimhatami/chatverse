@@ -7,6 +7,12 @@ function stringToHTML(str) {
   return doc.body.firstChild
 }
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 function initNamespaceConnection(endpoint) {
   if(namespaceSocket) namespaceSocket.close();
   namespaceSocket = io(`http://localhost:3000/${endpoint}`);
@@ -64,7 +70,10 @@ function sendMessage() {
   if (message.trim() == '') {
     return alert('input message can not be empty');
   }
+  const userId = document.getElementById('userID').value;
+  console.log('USERID: ', userId);
   namespaceSocket.emit('newMessage', {
+    sender: userId,
     message,
     roomName,
     endpoint

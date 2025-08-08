@@ -86,7 +86,6 @@ class CreateApplication {
 
   initClientSession() {
     this.#app.use(cookieParser(config.COOKIE_PARSER_SECRET_KEY))
-    console.log('keyy', config.COOKIE_PARSER_SECRET_KEY);
     this.#app.use(session({
       secret: config.COOKIE_PARSER_SECRET_KEY,
       resave: true,
